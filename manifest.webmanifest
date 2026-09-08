@@ -1,8 +1,8 @@
 {
   "name": "Weekly Employee Payroll",
   "short_name": "Payroll",
-  "description": "Weekly employee payroll calculator",
-  "start_url": "./?v=5",
+  "description": "Weekly employee payroll calculator with optional cloud sync",
+  "start_url": "./?v=6",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f8",
