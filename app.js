@@ -7,7 +7,7 @@
   const employeesEl = $('#employees'), historyEl = $('#historyList');
   const money = n => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(Number.isFinite(n)?n:0);
   const num = v => { const n=parseFloat(v); return Number.isFinite(n)&&n>=0?Math.min(n,1000000):0; };
-  const esc = s => String(s??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));
+  const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
   const monday = () => { const d=new Date(); const day=(d.getDay()+6)%7; d.setDate(d.getDate()-day); return d.toISOString().slice(0,10); };
   let state = loadState();
   let installPrompt = null;
