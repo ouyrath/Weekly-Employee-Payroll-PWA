@@ -1,5 +1,5 @@
-const CACHE='weekly-payroll-v5';
-const ASSETS=['./','./index.html','./app.js?v=5','./manifest.webmanifest?v=5','./icon.svg'];
+const CACHE='weekly-payroll-v6';
+const ASSETS=['./','./index.html','./app.js?v=6','./manifest.webmanifest?v=6','./icon.svg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));
@@ -7,37 +7,28 @@ self.addEventListener('install',event=>{
 });
 
 self.addEventListener('activate',event=>{
-  event.waitUntil(
-    caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))
-  );
+  event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));
   self.clients.claim();
 });
 
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET') return;
-
   const request=event.request;
   const isFreshFirst=request.mode==='navigate' || request.destination==='document' || request.destination==='script';
-
   if(isFreshFirst){
-    event.respondWith(
-      fetch(request).then(response=>{
-        const copy=response.clone();
-        caches.open(CACHE).then(cache=>cache.put(request,copy));
-        return response;
-      }).catch(async()=>{
-        const cached=await caches.match(request);
-        return cached || caches.match('./index.html');
-      })
-    );
-    return;
-  }
-
-  event.respondWith(
-    caches.match(request).then(cached=>cached || fetch(request).then(response=>{
+    event.respondWith(fetch(request).then(response=>{
       const copy=response.clone();
       caches.open(CACHE).then(cache=>cache.put(request,copy));
       return response;
-    }))
-  );
+    }).catch(async()=>{
+      const cached=await caches.match(request);
+      return cached || caches.match('./index.html');
+    }));
+    return;
+  }
+  event.respondWith(caches.match(request).then(cached=>cached || fetch(request).then(response=>{
+    const copy=response.clone();
+    caches.open(CACHE).then(cache=>cache.put(request,copy));
+    return response;
+  })));
 });
