@@ -2,7 +2,7 @@
   "name": "Weekly Employee Payroll",
   "short_name": "Payroll",
   "description": "Weekly employee payroll calculator",
-  "start_url": "./?v=4",
+  "start_url": "./?v=5",
   "scope": "./",
   "display": "standalone",
   "background_color": "#f4f6f8",
