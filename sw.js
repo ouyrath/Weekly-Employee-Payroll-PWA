@@ -1,5 +1,5 @@
-const CACHE='weekly-payroll-v6';
-const ASSETS=['./','./index.html','./app.js?v=6','./manifest.webmanifest?v=6','./icon.svg'];
+const CACHE='weekly-payroll-v8';
+const ASSETS=['./','./index.html','./app.js?v=8','./auth-reset.js?v=8','./manifest.webmanifest?v=8','./icon.svg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)));
