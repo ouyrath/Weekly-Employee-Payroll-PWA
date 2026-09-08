@@ -34,8 +34,21 @@
   }
   function getTotals(){ let worked=0,hours=0,gross=0,pay=0; state.employees.forEach(e=>{const c=calc(e);if((c.payType==='fixed'&&c.gross>0)||(c.payType==='hourly'&&c.hours>0))worked++;hours+=c.hours;gross+=c.gross;pay+=c.pay;}); return {worked,hours,gross,pay}; }
   function updateSummary(){
-    const {worked,hours,gross,pay}=getTotals(); const sales=num(state.totalSales), supplies=num(state.supplies); const suppliesPct=sales>0?(supplies/sales)*100:0; const payrollPct=sales>0?(gross/sales)*100:0;
-    $('#worked').textContent=worked; $('#hoursTotal').textContent=hours.toFixed(2); $('#grossTotal').textContent=money(gross); $('#payTotal').textContent=money(pay); $('#suppliesPct').textContent=suppliesPct.toFixed(2)+'%'; $('#payrollPct').textContent=payrollPct.toFixed(2)+'%';
+    const {worked,hours,gross,pay}=getTotals();
+    const sales=num(state.totalSales), supplies=num(state.supplies);
+    const suppliesPct=sales>0?(supplies/sales)*100:0;
+    const payrollPct=sales>0?(gross/sales)*100:0;
+    const totalCost=supplies+gross;
+    const totalCostPct=sales>0?(totalCost/sales)*100:0;
+    const cashRemaining=sales-totalCost;
+    $('#worked').textContent=worked;
+    $('#hoursTotal').textContent=hours.toFixed(2);
+    $('#grossTotal').textContent=money(gross);
+    $('#payTotal').textContent=money(pay);
+    $('#suppliesPct').textContent=suppliesPct.toFixed(2)+'%';
+    $('#payrollPct').textContent=payrollPct.toFixed(2)+'%';
+    $('#totalCostPct').textContent=totalCostPct.toFixed(2)+'%';
+    $('#cashRemaining').textContent=money(cashRemaining);
   }
   function renderEmployees(){
     employeesEl.innerHTML='';
@@ -48,7 +61,16 @@
   function refreshCard(card,e){ const c=calc(e), fixed=e.payType==='fixed'; card.querySelector('[data-out="regular"]').textContent=fixed?'Fixed weekly':c.regular.toFixed(2); card.querySelector('[data-out="overtime"]').textContent=fixed?money(c.gross):c.overtime.toFixed(2); card.querySelector('[data-out="gross"]').textContent=money(c.gross); card.querySelector('[data-out="pay"]').textContent=money(c.pay); updateSummary(); saveState(); }
   function renderHistory(){
     historyEl.innerHTML=''; if(!state.history?.length){historyEl.innerHTML='<div class="empty">No saved weeks yet.</div>';return;}
-    state.history.slice().sort((a,b)=>b.weekStart.localeCompare(a.weekStart)).forEach(h=>{const sales=num(h.totalSales),supplies=num(h.supplies),pct=sales>0?(supplies/sales)*100:0;const row=document.createElement('div');row.className='history-item';row.innerHTML=`<div><strong>Week of ${esc(h.weekStart)}</strong><br><small>${num(h.worked)} employees · ${num(h.hours).toFixed(2)} hrs · ${money(num(h.pay))}<br>Sales ${money(sales)} · Supplies ${money(supplies)} (${pct.toFixed(2)}%)</small></div><div class="actions"><button class="btn secondary" type="button" data-load="${esc(h.id)}">Load</button><button class="btn danger" type="button" data-delete="${esc(h.id)}">Delete</button></div>`;historyEl.appendChild(row);});
+    state.history.slice().sort((a,b)=>b.weekStart.localeCompare(a.weekStart)).forEach(h=>{
+      const sales=num(h.totalSales), supplies=num(h.supplies), gross=num(h.gross);
+      const suppliesPct=sales>0?(supplies/sales)*100:0;
+      const totalCost=supplies+gross;
+      const totalPct=sales>0?(totalCost/sales)*100:0;
+      const remaining=sales-totalCost;
+      const row=document.createElement('div');row.className='history-item';
+      row.innerHTML=`<div><strong>Week of ${esc(h.weekStart)}</strong><br><small>${num(h.worked)} employees · ${num(h.hours).toFixed(2)} hrs · ${money(num(h.pay))}<br>Sales ${money(sales)} · Supplies ${money(supplies)} (${suppliesPct.toFixed(2)}%) · Total ${totalPct.toFixed(2)}% · Remaining ${money(remaining)}</small></div><div class="actions"><button class="btn secondary" type="button" data-load="${esc(h.id)}">Load</button><button class="btn danger" type="button" data-delete="${esc(h.id)}">Delete</button></div>`;
+      historyEl.appendChild(row);
+    });
   }
   $('#weekStart').value=state.weekStart||monday(); $('#otToggle').checked=state.ot!==false; $('#totalSales').value=state.totalSales ?? ''; $('#supplies').value=state.supplies ?? '';
   $('#weekStart').addEventListener('change',e=>{state.weekStart=e.target.value||monday();saveState();}); $('#otToggle').addEventListener('change',e=>{state.ot=e.target.checked;renderEmployees();});
