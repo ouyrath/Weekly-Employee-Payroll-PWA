@@ -4,7 +4,6 @@
 
   const mainSites = [
     {name:'KhmerFinds', url:'https://khmerfinds.com', note:'Main classifieds/community website'},
-    {name:'KhmerFinds Video', url:'https://video.khmerfinds.com', note:'Video platform'},
     {name:'Weekly Payroll', url:'https://weekly-payroll-pwa.vercel.app', note:'Weekly payroll calculator'},
     {name:'Employee Time Clock', url:'https://employee-timeclock-chi.vercel.app', note:'Employee clock and schedule'},
     {name:'Now Hiring Public', url:'https://now-hiring-public.vercel.app', note:'Public hiring/application site'},
@@ -15,7 +14,6 @@
     {name:'Emily Alarm Clock', url:'https://emily-alarm-clock.vercel.app', note:'Alarm clock app'},
     {name:'Super Loud Kitchen Timer', url:'https://super-loud-kitchen-timer.vercel.app', note:'Kitchen timer app'},
     {name:'Emily Calculator', url:'https://emily-calculator.vercel.app', note:'Calculator app'},
-    {name:'Khmer Compass', url:'https://khmer-compass.vercel.app', note:'English / Khmer compass'},
     {name:'Fair Play Blackjack', url:'https://fair-play-blackjack.vercel.app', note:'Blackjack game'},
     {name:'Khmer Blackjack', url:'https://khmer-blackjack.vercel.app', note:'Khmer blackjack game'},
     {name:'Poker Play', url:'https://poker-play.vercel.app', note:'Poker game'},
@@ -26,9 +24,7 @@
     {name:'Khmer Chat', url:'https://khmer-chat.vercel.app', note:'Khmer chat website'},
     {name:'Khmer Together', url:'https://khmer-together.vercel.app', note:'Khmer community project'},
     {name:'KhmerFinds Simple', url:'https://khmerfinds-simple.vercel.app', note:'Simplified KhmerFinds project'},
-    {name:'KhmerFinds Video Hub', url:'https://khmerfinds-video-hub.vercel.app', note:'Video hub project'},
-    {name:'David Coin DVC', url:'https://david-coin-dvc.vercel.app', note:'DVC token website'},
-    {name:'Reminder Website', url:'https://reminder-website.vercel.app', note:'Reminder website'}
+    {name:'David Coin DVC', url:'https://david-coin-dvc.vercel.app', note:'DVC token website'}
   ];
 
   const testSites = [
