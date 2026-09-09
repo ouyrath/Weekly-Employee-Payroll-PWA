@@ -5,15 +5,18 @@
   const realFetch = window.fetch.bind(window);
 
   const LEGACY_KEY = 'weeklyPayrollState';
+  const SESSION_KEY = 'weeklyPayrollCloudSession';
   const PAGE_KEYS = {
     1: 'weeklyPayrollState_page1_v2',
-    2: 'weeklyPayrollState_page2_v2'
+    2: 'weeklyPayrollState_page2_v2',
+    3: 'weeklyPayrollState_page3_blank_v1'
   };
   const CLOUD_BOOK_KEY = 'weeklyPayrollCloudBook_v2';
   const BOOK_MARKER = '__weeklyPayrollPages';
 
   const params = new URLSearchParams(location.search);
-  const activePage = params.get('page') === '2' ? 2 : 1;
+  const requestedPage = params.get('page');
+  const activePage = requestedPage === '3' ? 3 : (requestedPage === '2' ? 2 : 1);
 
   const legacyRaw = rawGet.call(localStorage, LEGACY_KEY);
   const page1Raw = rawGet.call(localStorage, PAGE_KEYS[1]);
@@ -74,8 +77,10 @@
     const saved = safeParse(rawGet.call(localStorage, CLOUD_BOOK_KEY));
     if (saved && saved[BOOK_MARKER] === 2 && saved.pages) {
       const book = makeBook(saved);
-      const activeLocal = localPageState(activePage);
-      if (activeLocal) book.pages[activePage] = clone(activeLocal);
+      if (activePage === 1 || activePage === 2) {
+        const activeLocal = localPageState(activePage);
+        if (activeLocal) book.pages[activePage] = clone(activeLocal);
+      }
       return book;
     }
 
@@ -94,6 +99,9 @@
   Storage.prototype.getItem = function(key) {
     if (this === localStorage && key === LEGACY_KEY) {
       return rawGet.call(this, PAGE_KEYS[activePage]);
+    }
+    if (this === localStorage && activePage === 3 && key === SESSION_KEY) {
+      return null;
     }
     return rawGet.call(this, key);
   };
@@ -115,7 +123,7 @@
   window.fetch = async function(input, init = {}) {
     const url = typeof input === 'string' ? input : (input?.url || '');
     const isPayrollCloud = url.includes('/rest/v1/weekly_payroll_cloud');
-    if (!isPayrollCloud) return realFetch(input, init);
+    if (!isPayrollCloud || activePage === 3) return realFetch(input, init);
 
     const method = String(init?.method || (typeof input !== 'string' ? input?.method : '') || 'GET').toUpperCase();
     let nextInit = init;
@@ -172,7 +180,7 @@
       .payroll-page-nav{display:flex;gap:8px;align-items:center;margin:-4px 0 12px;padding:6px;background:#e9edf2;border-radius:14px;width:max-content;max-width:100%}
       .payroll-page-nav button{border:0;background:transparent;color:var(--muted);font-weight:900;padding:9px 18px;border-radius:10px;min-width:94px}
       .payroll-page-nav button.active{background:#fff;color:var(--text);box-shadow:0 2px 8px rgba(16,24,40,.10)}
-      @media(max-width:520px){.payroll-page-nav{width:100%;display:grid;grid-template-columns:1fr 1fr}.payroll-page-nav button{width:100%;min-width:0;padding:9px 10px}}
+      @media(max-width:520px){.payroll-page-nav{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.payroll-page-nav button{width:100%;min-width:0;padding:9px 8px}}
       @media print{.payroll-page-nav{display:none!important}}
     `;
     document.head.appendChild(style);
@@ -184,13 +192,15 @@
     nav.innerHTML = `
       <button type="button" data-page="1" class="${activePage === 1 ? 'active' : ''}" aria-selected="${activePage === 1}">Page 1</button>
       <button type="button" data-page="2" class="${activePage === 2 ? 'active' : ''}" aria-selected="${activePage === 2}">Page 2</button>
+      <button type="button" data-page="3" class="${activePage === 3 ? 'active' : ''}" aria-selected="${activePage === 3}">Page 3</button>
     `;
     topbar.insertAdjacentElement('afterend', nav);
 
     nav.addEventListener('click', event => {
       const button = event.target.closest('button[data-page]');
       if (!button) return;
-      const page = button.dataset.page === '2' ? 2 : 1;
+      const requested = button.dataset.page;
+      const page = requested === '3' ? 3 : (requested === '2' ? 2 : 1);
       if (page === activePage) return;
       const next = new URL(location.href);
       next.search = '';
