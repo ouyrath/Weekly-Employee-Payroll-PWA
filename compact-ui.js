@@ -2,6 +2,12 @@
   const employeesEl = document.querySelector('#employees');
   if (!employeesEl) return;
 
+  // Load Page 2 business-cost calculations without changing the proven payroll engine.
+  const financeScript = document.createElement('script');
+  financeScript.src = './page2-finance.js?v=11';
+  financeScript.async = false;
+  document.body.appendChild(financeScript);
+
   const openEmployees = new Set();
 
   const esc = value => String(value ?? '')
