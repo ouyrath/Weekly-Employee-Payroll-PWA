@@ -72,12 +72,23 @@
 
   function currentBook() {
     const saved = safeParse(rawGet.call(localStorage, CLOUD_BOOK_KEY));
-    const book = makeBook(saved);
+    if (saved && saved[BOOK_MARKER] === 2 && saved.pages) {
+      const book = makeBook(saved);
+      const activeLocal = localPageState(activePage);
+      if (activeLocal) book.pages[activePage] = clone(activeLocal);
+      return book;
+    }
+
     const p1 = localPageState(1);
     const p2 = localPageState(2);
-    if (p1) book.pages[1] = clone(p1);
-    if (p2) book.pages[2] = clone(p2);
-    return book;
+    const fallback = p1 || p2 || safeParse(legacyRaw);
+    return {
+      [BOOK_MARKER]: 2,
+      pages: {
+        1: clone(p1 || fallback),
+        2: clone(p2 || p1 || fallback)
+      }
+    };
   }
 
   Storage.prototype.getItem = function(key) {
