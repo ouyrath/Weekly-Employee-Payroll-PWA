@@ -1,4 +1,4 @@
-const CACHE='weekly-payroll-v12';
+const CACHE='weekly-payroll-v13';
 const ASSETS=['./','./index.html','./multi-page.js?v=11','./page2-finance.js?v=12','./page3-blank.js?v=1','./app.js?v=8','./auth-reset.js?v=8','./compact-ui.js?v=9','./manifest.webmanifest?v=8','./icon.svg'];
 
 self.addEventListener('install',event=>{
